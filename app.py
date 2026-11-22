@@ -13,6 +13,7 @@ from src.auth import (
 )
 from src.data_prep import add_scores, load_books
 from src.db import init_db
+from src.demo import DEMO_PASSWORD, DEMO_USERS, load_demo_data
 from src.marketplace import (
     ASPECTS,
     add_manuscript,
@@ -201,6 +202,7 @@ def page_register():
 
 def page_admin():
     st.subheader("Admin: verify readers")
+    show_flash()
     pending = list_unverified_readers()
     if not pending:
         st.success("No readers are waiting for verification.")
@@ -217,6 +219,19 @@ def page_admin():
         st.dataframe(pd.DataFrame(ledger), width="stretch", hide_index=True)
     else:
         st.caption("No escrow entries yet.")
+
+    st.markdown("#### Demo data")
+    st.caption(
+        "Creates sample accounts, two manuscripts and one completed beta read, "
+        "so the marketplace can be demonstrated quickly."
+    )
+    if st.button("Load demo data"):
+        ok, msg = load_demo_data()
+        flash(ok, msg)
+        st.rerun()
+    demo = pd.DataFrame(DEMO_USERS, columns=["Name", "Email", "Role"])
+    demo["Password"] = DEMO_PASSWORD
+    st.dataframe(demo, width="stretch", hide_index=True)
 
 
 # ---------------------------------------------------------------- marketplace pages
